@@ -1,4 +1,4 @@
-# ⚡ AI Resume Analyzer Pro
+# ⚡ AI Resume Analyzer 
 
 A full-stack web application to analyze resumes against job descriptions using semantic similarity and NLP techniques.
 
