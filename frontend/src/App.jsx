@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 // ── API helpers ────────────────────────────────────────────────────────────────
 const api = {
   async post(path, body, token) {
@@ -31,42 +32,40 @@ const api = {
 };
 
 // ── Gauge component ────────────────────────────────────────────────────────────
-function ScoreGauge({ score, size = 140 }) {
+function ScoreGauge({ score, size = 120 }) {
   const r = 54;
   const circ = 2 * Math.PI * r;
   const arc = circ * 0.75;
   const filled = (score / 100) * arc;
-  const color = score >= 75 ? "#22d3a5" : score >= 50 ? "#f59e0b" : "#f87171";
+  
+  // High contrast colors
+  const color = score >= 75 ? "var(--success)" : score >= 50 ? "var(--warning)" : "var(--danger)";
+  
   return (
-    <svg width={size} height={size} viewBox="0 0 120 120" style={{ overflow: "visible" }}>
-      <circle cx="60" cy="60" r={r} fill="none" stroke="#1e293b" strokeWidth="10"
-        strokeDasharray={`${arc} ${circ - arc}`} strokeLinecap="round"
-        strokeDashoffset={circ * 0.125} transform="rotate(-225 60 60)" />
-      <circle cx="60" cy="60" r={r} fill="none" stroke={color} strokeWidth="10"
-        strokeDasharray={`${filled} ${circ - filled}`} strokeLinecap="round"
-        strokeDashoffset={circ * 0.125} transform="rotate(-225 60 60)"
-        style={{ transition: "stroke-dasharray 1s ease" }} />
-      <text x="60" y="58" textAnchor="middle" fill={color} fontSize="22" fontWeight="800" fontFamily="'Space Grotesk', sans-serif">{score}%</text>
-      <text x="60" y="75" textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="'Space Grotesk', sans-serif">MATCH SCORE</text>
-    </svg>
+    <div style={{ position: 'relative', width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <svg width={size} height={size} viewBox="0 0 120 120" style={{ position: 'absolute', top: 0, left: 0 }}>
+        <circle cx="60" cy="60" r={r} fill="none" stroke="var(--border-color)" strokeWidth="8"
+          strokeDasharray={`${arc} ${circ - arc}`} strokeLinecap="round"
+          strokeDashoffset={circ * 0.125} transform="rotate(-225 60 60)" />
+        <circle cx="60" cy="60" r={r} fill="none" stroke={color} strokeWidth="8"
+          strokeDasharray={`${filled} ${circ - filled}`} strokeLinecap="round"
+          strokeDashoffset={circ * 0.125} transform="rotate(-225 60 60)"
+          style={{ transition: "stroke-dasharray 1s cubic-bezier(0.16, 1, 0.3, 1)" }} />
+      </svg>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-10px' }}>
+        <span className="text-3xl font-bold" style={{ color }}>{score}%</span>
+        <span className="uppercase-label" style={{ fontSize: '10px' }}>Match</span>
+      </div>
+    </div>
   );
 }
 
 // ── Skill chip ─────────────────────────────────────────────────────────────────
 function Chip({ label, type }) {
-  const colors = {
-    match: { bg: "rgba(34,211,165,0.12)", border: "#22d3a5", text: "#22d3a5" },
-    missing: { bg: "rgba(248,113,113,0.12)", border: "#f87171", text: "#f87171" },
-    extra: { bg: "rgba(148,163,184,0.1)", border: "#475569", text: "#94a3b8" },
-  };
-  const c = colors[type] || colors.extra;
   return (
-    <span style={{
-      display: "inline-block", padding: "3px 11px", borderRadius: "999px",
-      background: c.bg, border: `1px solid ${c.border}`, color: c.text,
-      fontSize: "12px", fontWeight: 600, margin: "3px",
-      fontFamily: "'Space Grotesk', sans-serif", letterSpacing: "0.01em",
-    }}>{label}</span>
+    <span className={`chip ${type || ''}`}>
+      {label}
+    </span>
   );
 }
 
@@ -74,24 +73,24 @@ function Chip({ label, type }) {
 function MiniBar({ label, value, max }) {
   const pct = max ? (value / max) * 100 : 0;
   return (
-    <div style={{ marginBottom: 8 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-        <span style={{ fontSize: 12, color: "#94a3b8" }}>{label}</span>
-        <span style={{ fontSize: 12, color: "#e2e8f0", fontWeight: 700 }}>{value}</span>
+    <div className="mb-2">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm text-secondary">{label}</span>
+        <span className="text-sm font-semibold">{value}</span>
       </div>
-      <div style={{ height: 6, background: "#1e293b", borderRadius: 3, overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg,#22d3a5,#3b82f6)", borderRadius: 3, transition: "width 0.8s ease" }} />
+      <div style={{ height: '4px', background: "var(--border-color)", borderRadius: '2px', overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, background: "var(--text-primary)", borderRadius: '2px', transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1)" }} />
       </div>
     </div>
   );
 }
 
 // ── Stat card ──────────────────────────────────────────────────────────────────
-function StatCard({ label, value, accent = "#22d3a5" }) {
+function StatCard({ label, value }) {
   return (
-    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 16, padding: "20px 24px" }}>
-      <div style={{ fontSize: 28, fontWeight: 800, color: accent, fontFamily: "'Space Grotesk', sans-serif" }}>{value}</div>
-      <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>{label}</div>
+    <div className="card flex-col gap-2">
+      <div className="uppercase-label">{label}</div>
+      <div className="text-3xl font-semibold">{value}</div>
     </div>
   );
 }
@@ -103,6 +102,7 @@ export default function App() {
   const [userName, setUserName] = useState(() => localStorage.getItem("userName") || "");
   const [tab, setTab] = useState("analyze"); // analyze | history
   const [adminTab, setAdminTab] = useState("stats");
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
 
   // Auth state
   const [authForm, setAuthForm] = useState({ name: "", email: "", password: "" });
@@ -131,7 +131,23 @@ export default function App() {
 
   useEffect(() => {
     if (token) setView("app");
+    applyTheme(theme);
   }, []);
+
+  const applyTheme = (newTheme) => {
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    applyTheme(newTheme);
+  };
 
   // ── Auth ──
   const handleAuth = async (mode) => {
@@ -197,112 +213,102 @@ export default function App() {
 
   useEffect(() => { if (view === "admin" && token) loadAdmin(); }, [view]);
 
-  // ──────────────────────────────────────────────────────────────────────────────
-  // STYLES
-  const styles = {
-    root: {
-      minHeight: "100vh", background: "#060c1a", color: "#e2e8f0",
-      fontFamily: "'Space Grotesk', 'Inter', sans-serif",
-    },
-    nav: {
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 32px", height: 64,
-      background: "rgba(6,12,26,0.9)", backdropFilter: "blur(12px)",
-      borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 100,
-    },
-    logo: { fontSize: 18, fontWeight: 800, color: "#22d3a5", letterSpacing: "-0.02em" },
-    navLinks: { display: "flex", gap: 8 },
-    navBtn: (active) => ({
-      padding: "6px 16px", borderRadius: 8, border: "none", cursor: "pointer",
-      fontWeight: 600, fontSize: 14, fontFamily: "inherit",
-      background: active ? "#22d3a5" : "transparent",
-      color: active ? "#060c1a" : "#64748b",
-      transition: "all 0.2s",
-    }),
-    page: { maxWidth: 900, margin: "0 auto", padding: "40px 24px" },
-    card: {
-      background: "#0a1628", border: "1px solid #1e293b", borderRadius: 20,
-      padding: 28, marginBottom: 24,
-    },
-    h2: { fontSize: 22, fontWeight: 800, marginBottom: 20, color: "#f1f5f9", letterSpacing: "-0.02em" },
-    label: { display: "block", fontSize: 13, fontWeight: 600, color: "#94a3b8", marginBottom: 8 },
-    textarea: {
-      width: "100%", minHeight: 140, background: "#060c1a", border: "1px solid #1e293b",
-      borderRadius: 12, padding: "14px 16px", color: "#e2e8f0", fontSize: 14,
-      fontFamily: "inherit", resize: "vertical", outline: "none",
-      boxSizing: "border-box", lineHeight: 1.6,
-    },
-    input: {
-      width: "100%", background: "#060c1a", border: "1px solid #1e293b",
-      borderRadius: 12, padding: "13px 16px", color: "#e2e8f0", fontSize: 14,
-      fontFamily: "inherit", outline: "none", boxSizing: "border-box",
-    },
-    btn: (variant = "primary") => ({
-      padding: "12px 28px", borderRadius: 12, border: "none", cursor: "pointer",
-      fontWeight: 700, fontSize: 15, fontFamily: "inherit",
-      background: variant === "primary" ? "#22d3a5" : variant === "outline"
-        ? "transparent" : "#1e293b",
-      color: variant === "primary" ? "#060c1a" : "#e2e8f0",
-      border: variant === "outline" ? "1px solid #334155" : "none",
-      transition: "opacity 0.2s, transform 0.1s",
-    }),
-    error: { color: "#f87171", fontSize: 13, marginTop: 8, padding: "10px 14px", background: "rgba(248,113,113,0.08)", borderRadius: 8, border: "1px solid rgba(248,113,113,0.2)" },
-    toggleRow: { display: "flex", gap: 8, marginBottom: 20 },
-    toggleBtn: (active) => ({
-      padding: "8px 18px", borderRadius: 8, border: `1px solid ${active ? "#22d3a5" : "#1e293b"}`,
-      background: active ? "rgba(34,211,165,0.1)" : "transparent",
-      color: active ? "#22d3a5" : "#64748b", cursor: "pointer",
-      fontWeight: 600, fontSize: 13, fontFamily: "inherit",
-    }),
-    sectionTitle: { fontSize: 13, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 },
-  };
+  // Shared Header
+  const Header = ({ title, showTabs = true }) => (
+    <nav className="nav-header">
+      <div className="container flex items-center justify-between" style={{ height: '64px' }}>
+        <div className="flex items-center gap-2">
+           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+           <span className="font-semibold">{title || "ResumeAI"}</span>
+           {view === 'admin' && <span className="text-xs font-semibold" style={{ background: 'var(--text-primary)', color: 'var(--bg-color)', padding: '2px 6px', borderRadius: '4px' }}>Admin</span>}
+        </div>
+        
+        {showTabs && view !== 'admin' && (
+          <div className="flex gap-2">
+            <button className={`btn btn-ghost ${tab === 'analyze' ? 'active' : ''}`} onClick={() => setTab("analyze")}>Analyze</button>
+            <button className={`btn btn-ghost ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab("history")}>History</button>
+          </div>
+        )}
+
+        <div className="flex items-center gap-4">
+          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme">
+            {theme === 'dark' ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            )}
+          </button>
+          
+          {view === 'admin' ? (
+             <button className="btn btn-ghost" onClick={() => setView("app")}>Back to App</button>
+          ) : (
+            <>
+              <button className="btn btn-ghost" onClick={() => setView("admin")}>Admin</button>
+            </>
+          )}
+          <button className="btn btn-secondary" onClick={logout}>Sign out</button>
+        </div>
+      </div>
+    </nav>
+  );
 
   // ── RENDER: Auth ──────────────────────────────────────────────────────────────
   if (view === "login" || view === "register") {
     const isReg = view === "register";
     return (
-      <div style={{ ...styles.root, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet" />
-        <div style={{ width: "100%", maxWidth: 420, padding: "0 24px" }}>
-          {/* Logo */}
-          <div style={{ textAlign: "center", marginBottom: 40 }}>
-            <div style={{ fontSize: 36, marginBottom: 8 }}>⚡</div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: "#22d3a5", letterSpacing: "-0.03em" }}>ResumeAI</div>
-            <div style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>AI-powered resume analysis</div>
+      <div className="flex flex-col items-center justify-center" style={{ minHeight: "100vh", position: 'relative' }}>
+         <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem' }}>
+            <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Theme">
+              {theme === 'dark' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              )}
+            </button>
+         </div>
+
+        <div style={{ width: "100%", maxWidth: "380px", padding: "0 1.5rem" }}>
+          <div className="mb-8" style={{ textAlign: "center" }}>
+            <svg style={{ margin: '0 auto 1rem' }} width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            <h1 className="text-2xl">ResumeAI</h1>
+            <p className="text-secondary text-sm mt-2">AI-powered resume analysis</p>
           </div>
 
-          <div style={{ ...styles.card }}>
-            <h2 style={{ ...styles.h2, textAlign: "center" }}>{isReg ? "Create Account" : "Sign In"}</h2>
+          <div className="card animate-fade-in">
+            <h2 className="text-xl mb-6 text-center">
+              {isReg ? "Create an account" : "Welcome back"}
+            </h2>
 
             {isReg && (
-              <div style={{ marginBottom: 16 }}>
-                <label style={styles.label}>Full Name</label>
-                <input style={styles.input} placeholder="Jane Doe"
+              <div className="mb-4">
+                <label className="text-sm font-medium mb-1 block">Full Name</label>
+                <input className="input-field" placeholder="Jane Doe"
                   value={authForm.name} onChange={e => setAuthForm({ ...authForm, name: e.target.value })} />
               </div>
             )}
-            <div style={{ marginBottom: 16 }}>
-              <label style={styles.label}>Email</label>
-              <input style={styles.input} type="email" placeholder="you@example.com"
+            <div className="mb-4">
+              <label className="text-sm font-medium mb-1 block">Email address</label>
+              <input className="input-field" type="email" placeholder="you@example.com"
                 value={authForm.email} onChange={e => setAuthForm({ ...authForm, email: e.target.value })} />
             </div>
-            <div style={{ marginBottom: 20 }}>
-              <label style={styles.label}>Password</label>
-              <input style={styles.input} type="password" placeholder="••••••••"
+            <div className="mb-6">
+              <label className="text-sm font-medium mb-1 block">Password</label>
+              <input className="input-field" type="password" placeholder="••••••••"
                 value={authForm.password} onChange={e => setAuthForm({ ...authForm, password: e.target.value })}
                 onKeyDown={e => e.key === "Enter" && handleAuth(isReg ? "register" : "login")} />
             </div>
-            {authError && <div style={styles.error}>{authError}</div>}
-            <button style={{ ...styles.btn("primary"), width: "100%", marginTop: 16, opacity: authLoading ? 0.6 : 1 }}
+            
+            {authError && <div className="mb-4 text-sm" style={{ color: "var(--danger)" }}>{authError}</div>}
+            
+            <button className="btn btn-primary" style={{ width: "100%" }}
               onClick={() => handleAuth(isReg ? "register" : "login")} disabled={authLoading}>
-              {authLoading ? "Please wait…" : isReg ? "Create Account" : "Sign In"}
+              {authLoading ? "Processing…" : isReg ? "Sign up" : "Sign in"}
             </button>
           </div>
 
-          <div style={{ textAlign: "center", marginTop: 16, fontSize: 14, color: "#64748b" }}>
+          <div className="text-center mt-6 text-sm text-secondary">
             {isReg ? "Already have an account? " : "Don't have an account? "}
-            <button style={{ background: "none", border: "none", color: "#22d3a5", cursor: "pointer", fontWeight: 700, fontFamily: "inherit" }}
+            <button style={{ background: "none", border: "none", color: "var(--text-primary)", cursor: "pointer", fontWeight: 600, padding: 0 }}
               onClick={() => { setView(isReg ? "login" : "register"); setAuthError(""); }}>
               {isReg ? "Sign in" : "Sign up"}
             </button>
@@ -317,34 +323,28 @@ export default function App() {
     const maxMissing = skillDemand?.top_missing?.[0]?.[1] || 1;
     const maxMatched = skillDemand?.top_matched?.[0]?.[1] || 1;
     return (
-      <div style={styles.root}>
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet" />
-        <nav style={styles.nav}>
-          <span style={styles.logo}>⚡ ResumeAI <span style={{ fontSize: 11, background: "#22d3a5", color: "#060c1a", borderRadius: 4, padding: "2px 7px", marginLeft: 6, fontWeight: 800 }}>ADMIN</span></span>
-          <div style={styles.navLinks}>
-            <button style={styles.navBtn(false)} onClick={() => setView("app")}>← Back to App</button>
-            <button style={styles.navBtn(false)} onClick={logout}>Logout</button>
+      <div style={{ minHeight: '100vh' }}>
+        <Header title="ResumeAI" showTabs={false} />
+
+        <div className="container mt-8 animate-fade-in">
+          <div className="mb-8">
+            <h1 className="text-3xl">Admin Overview</h1>
+            <p className="text-secondary mt-2">Platform statistics and skill demand analytics.</p>
           </div>
-        </nav>
 
-        <div style={styles.page}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 28, letterSpacing: "-0.03em" }}>Admin Dashboard</h1>
-
-          {adminError && <div style={styles.error}>{adminError}</div>}
+          {adminError && <div className="mb-6 text-sm" style={{ color: "var(--danger)" }}>{adminError}</div>}
 
           {stats && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16, marginBottom: 28 }}>
-              <StatCard label="Total Users" value={stats.total_users} accent="#22d3a5" />
-              <StatCard label="Total Resumes" value={stats.total_resumes} accent="#3b82f6" />
-              <StatCard label="Avg Match Score" value={`${stats.average_score}%`} accent="#f59e0b" />
-              <StatCard label="Resumes This Week" value={stats.recent_resumes_7d} accent="#a78bfa" />
-              <StatCard label="New Users (7d)" value={stats.new_users_7d} accent="#f472b6" />
+            <div className="grid grid-cols-3 mb-8">
+              <StatCard label="Total Users" value={stats.total_users} />
+              <StatCard label="Total Resumes" value={stats.total_resumes} />
+              <StatCard label="Avg Match Score" value={`${stats.average_score}%`} />
             </div>
           )}
 
           {stats && (
-            <div style={{ ...styles.card, marginBottom: 24 }}>
-              <div style={styles.sectionTitle}>Score Distribution</div>
+            <div className="card mb-8">
+              <div className="uppercase-label mb-4">Score Distribution</div>
               {Object.entries(stats.score_distribution).map(([k, v]) => (
                 <MiniBar key={k} label={k} value={v} max={stats.total_resumes || 1} />
               ))}
@@ -352,15 +352,15 @@ export default function App() {
           )}
 
           {skillDemand && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-              <div style={styles.card}>
-                <div style={styles.sectionTitle}>Top Matched Skills</div>
+            <div className="grid grid-cols-2">
+              <div className="card">
+                <div className="uppercase-label mb-4">Top Matched Skills</div>
                 {skillDemand.top_matched.map(([skill, count]) => (
                   <MiniBar key={skill} label={skill} value={count} max={maxMatched} />
                 ))}
               </div>
-              <div style={styles.card}>
-                <div style={styles.sectionTitle}>Top Missing Skills</div>
+              <div className="card">
+                <div className="uppercase-label mb-4">Top Missing Skills</div>
                 {skillDemand.top_missing.map(([skill, count]) => (
                   <MiniBar key={skill} label={skill} value={count} max={maxMissing} />
                 ))}
@@ -374,167 +374,154 @@ export default function App() {
 
   // ── RENDER: Main App ──────────────────────────────────────────────────────────
   return (
-    <div style={styles.root}>
-      <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <div style={{ minHeight: '100vh' }}>
+      <Header />
 
-      <nav style={styles.nav}>
-        <span style={styles.logo}>⚡ ResumeAI</span>
-        <div style={{ ...styles.navLinks, flex: 1, justifyContent: "center" }}>
-          <button style={styles.navBtn(tab === "analyze")} onClick={() => setTab("analyze")}>Analyze</button>
-          <button style={styles.navBtn(tab === "history")} onClick={() => setTab("history")}>History</button>
-        </div>
-        <div style={styles.navLinks}>
-          <button style={{ ...styles.navBtn(false), fontSize: 13 }} onClick={() => setView("admin")}>Admin</button>
-          <div style={{ width: 1, background: "#1e293b", margin: "0 4px" }} />
-          <span style={{ fontSize: 13, color: "#64748b", padding: "0 8px" }}>Hi, {userName}</span>
-          <button style={styles.navBtn(false)} onClick={logout}>Logout</button>
-        </div>
-      </nav>
-
-      {/* ── Analyze Tab ── */}
-      {tab === "analyze" && (
-        <div style={styles.page}>
-          <div style={{ marginBottom: 32 }}>
-            <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 6 }}>Resume Analyzer</h1>
-            <p style={{ color: "#64748b", fontSize: 15 }}>Analyze your resume against any job description using NLP.</p>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
-            {/* Resume Input */}
-            <div style={styles.card}>
-              <h2 style={styles.h2}>Your Resume</h2>
-              <div style={styles.toggleRow}>
-                <button style={styles.toggleBtn(inputMode === "text")} onClick={() => setInputMode("text")}>Paste Text</button>
-                <button style={styles.toggleBtn(inputMode === "file")} onClick={() => setInputMode("file")}>Upload File</button>
-              </div>
-              {inputMode === "text" ? (
-                <textarea style={styles.textarea} placeholder="Paste your resume text here…"
-                  value={resumeText} onChange={e => setResumeText(e.target.value)} />
-              ) : (
-                <div onClick={() => fileRef.current.click()} style={{
-                  minHeight: 140, border: "2px dashed #334155", borderRadius: 12,
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                  cursor: "pointer", color: "#64748b", gap: 8,
-                  background: uploadFile ? "rgba(34,211,165,0.06)" : "transparent",
-                  borderColor: uploadFile ? "#22d3a5" : "#334155",
-                }}>
-                  <div style={{ fontSize: 28 }}>📄</div>
-                  <div style={{ fontSize: 14 }}>{uploadFile ? uploadFile.name : "Click to upload PDF or TXT"}</div>
-                  <input ref={fileRef} type="file" accept=".pdf,.txt" style={{ display: "none" }}
-                    onChange={e => setUploadFile(e.target.files[0])} />
-                </div>
-              )}
+      <div className="container mt-8 animate-fade-in" style={{ maxWidth: '960px' }}>
+        
+        {/* ── Analyze Tab ── */}
+        {tab === "analyze" && (
+          <div>
+            <div className="mb-8 text-center">
+              <h1 className="text-3xl">Analyze Resume</h1>
+              <p className="text-secondary mt-2">Upload your resume and a job description to get instant feedback.</p>
             </div>
 
-            {/* JD Input */}
-            <div style={styles.card}>
-              <h2 style={styles.h2}>Job Description</h2>
-              <textarea style={{ ...styles.textarea, minHeight: 200 }}
-                placeholder="Paste the job description here…"
-                value={jdText} onChange={e => setJdText(e.target.value)} />
-            </div>
-          </div>
-
-          {analyzeError && <div style={{ ...styles.error, marginBottom: 16 }}>{analyzeError}</div>}
-
-          <div style={{ textAlign: "center", marginBottom: 32 }}>
-            <button style={{ ...styles.btn("primary"), padding: "14px 48px", fontSize: 16, opacity: analyzing ? 0.7 : 1 }}
-              onClick={handleAnalyze} disabled={analyzing}>
-              {analyzing ? "⏳ Analyzing…" : "⚡ Analyze Resume"}
-            </button>
-          </div>
-
-          {/* Results */}
-          {result && (
-            <div style={{ animation: "fadeIn 0.4s ease" }}>
-              <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`}</style>
-
-              {/* Score row */}
-              <div style={{ ...styles.card, display: "flex", gap: 32, alignItems: "center", flexWrap: "wrap" }}>
-                <ScoreGauge score={result.score} />
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <h2 style={{ ...styles.h2, marginBottom: 16 }}>Analysis Results</h2>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-                    <div style={{ background: "#060c1a", borderRadius: 10, padding: "12px 16px", border: "1px solid #1e293b" }}>
-                      <div style={{ fontSize: 11, color: "#64748b", marginBottom: 2 }}>TECH SCORE</div>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "#3b82f6" }}>{result.tech_score}%</div>
-                    </div>
-                    <div style={{ background: "#060c1a", borderRadius: 10, padding: "12px 16px", border: "1px solid #1e293b" }}>
-                      <div style={{ fontSize: 11, color: "#64748b", marginBottom: 2 }}>SOFT SKILLS</div>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "#a78bfa" }}>{result.soft_score}%</div>
-                    </div>
-                    <div style={{ background: "#060c1a", borderRadius: 10, padding: "12px 16px", border: "1px solid #1e293b" }}>
-                      <div style={{ fontSize: 11, color: "#64748b", marginBottom: 2 }}>EXP. YEARS</div>
-                      <div style={{ fontSize: 22, fontWeight: 800, color: "#f59e0b" }}>{result.experience_years}+</div>
-                    </div>
+            <div className="grid grid-cols-2 mb-6">
+              {/* Resume Input */}
+              <div className="card">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg">Your Resume</h2>
+                  <div className="flex gap-2">
+                    <button className={`btn btn-ghost text-xs ${inputMode === 'text' ? 'active' : ''}`} style={{ padding: '0.25rem 0.5rem' }} onClick={() => setInputMode("text")}>Text</button>
+                    <button className={`btn btn-ghost text-xs ${inputMode === 'file' ? 'active' : ''}`} style={{ padding: '0.25rem 0.5rem' }} onClick={() => setInputMode("file")}>File</button>
                   </div>
-                  {result.contact?.email && (
-                    <div style={{ marginTop: 14, fontSize: 13, color: "#64748b" }}>
-                      📧 {result.contact.email} {result.contact.phone && ` · 📞 ${result.contact.phone}`}
+                </div>
+                {inputMode === "text" ? (
+                  <textarea className="input-field" placeholder="Paste your resume content here..."
+                    value={resumeText} onChange={e => setResumeText(e.target.value)} />
+                ) : (
+                  <div 
+                    onClick={() => fileRef.current.click()} 
+                    className={`upload-zone ${uploadFile ? 'active' : ''}`}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                    <span className="text-sm font-medium">{uploadFile ? uploadFile.name : "Select PDF or TXT file"}</span>
+                    {!uploadFile && <span className="text-xs text-tertiary mt-1">or click to browse</span>}
+                    <input ref={fileRef} type="file" accept=".pdf,.txt" style={{ display: "none" }}
+                      onChange={e => setUploadFile(e.target.files[0])} />
+                  </div>
+                )}
+              </div>
+
+              {/* JD Input */}
+              <div className="card">
+                <h2 className="text-lg mb-4">Job Description</h2>
+                <textarea className="input-field" style={{ minHeight: '170px' }}
+                  placeholder="Paste the job description here..."
+                  value={jdText} onChange={e => setJdText(e.target.value)} />
+              </div>
+            </div>
+
+            {analyzeError && <div className="mb-6 text-sm" style={{ color: "var(--danger)", textAlign: 'center' }}>{analyzeError}</div>}
+
+            <div className="flex justify-center mb-12">
+              <button className="btn btn-primary" style={{ padding: "0.75rem 2.5rem" }}
+                onClick={handleAnalyze} disabled={analyzing}>
+                {analyzing ? "Analyzing..." : "Analyze Resume"}
+              </button>
+            </div>
+
+            {/* Results */}
+            {result && (
+              <div className="animate-fade-in pb-12">
+                <div className="card flex items-center gap-8 mb-6">
+                  <ScoreGauge score={result.score} />
+                  <div className="flex-col" style={{ flex: 1 }}>
+                    <h2 className="text-xl mb-4">Analysis Results</h2>
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div className="flex-col">
+                        <span className="uppercase-label">Tech Match</span>
+                        <span className="text-2xl font-bold">{result.tech_score}%</span>
+                      </div>
+                      <div className="flex-col">
+                        <span className="uppercase-label">Soft Skills</span>
+                        <span className="text-2xl font-bold">{result.soft_score}%</span>
+                      </div>
+                      <div className="flex-col">
+                        <span className="uppercase-label">Experience</span>
+                        <span className="text-2xl font-bold">{result.experience_years}+ yrs</span>
+                      </div>
                     </div>
-                  )}
+                    {result.contact?.email && (
+                      <div className="text-sm text-secondary pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>
+                        {result.contact.email} {result.contact.phone && ` • ${result.contact.phone}`}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3">
+                  <div className="card">
+                    <div className="uppercase-label mb-4">Matched ({result.matched_skills.length})</div>
+                    <div className="flex flex-wrap gap-2">{result.matched_skills.map(s => <Chip key={s} label={s} type="match" />)}</div>
+                    {result.matched_skills.length === 0 && <span className="text-sm text-tertiary">None found</span>}
+                  </div>
+                  <div className="card">
+                    <div className="uppercase-label mb-4">Missing ({result.missing_skills.length})</div>
+                    <div className="flex flex-wrap gap-2">{result.missing_skills.map(s => <Chip key={s} label={s} type="missing" />)}</div>
+                    {result.missing_skills.length === 0 && <span className="text-sm text-tertiary">None missing</span>}
+                  </div>
+                  <div className="card">
+                    <div className="uppercase-label mb-4">Extra ({result.extra_skills.length})</div>
+                    <div className="flex flex-wrap gap-2">{result.extra_skills.map(s => <Chip key={s} label={s} />)}</div>
+                    {result.extra_skills.length === 0 && <span className="text-sm text-tertiary">None</span>}
+                  </div>
                 </div>
               </div>
-
-              {/* Skills breakdown */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-                <div style={styles.card}>
-                  <div style={styles.sectionTitle}>✅ Matched Skills ({result.matched_skills.length})</div>
-                  <div>{result.matched_skills.map(s => <Chip key={s} label={s} type="match" />)}</div>
-                  {result.matched_skills.length === 0 && <span style={{ color: "#475569", fontSize: 13 }}>None found</span>}
-                </div>
-                <div style={styles.card}>
-                  <div style={styles.sectionTitle}>❌ Missing Skills ({result.missing_skills.length})</div>
-                  <div>{result.missing_skills.map(s => <Chip key={s} label={s} type="missing" />)}</div>
-                  {result.missing_skills.length === 0 && <span style={{ color: "#475569", fontSize: 13 }}>None! Great match.</span>}
-                </div>
-                <div style={styles.card}>
-                  <div style={styles.sectionTitle}>➕ Extra Skills ({result.extra_skills.length})</div>
-                  <div>{result.extra_skills.map(s => <Chip key={s} label={s} type="extra" />)}</div>
-                  {result.extra_skills.length === 0 && <span style={{ color: "#475569", fontSize: 13 }}>None</span>}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── History Tab ── */}
-      {tab === "history" && (
-        <div style={styles.page}>
-          <div style={{ marginBottom: 28 }}>
-            <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 6 }}>Analysis History</h1>
-            <p style={{ color: "#64748b", fontSize: 14 }}>Your last 20 analyses</p>
+            )}
           </div>
+        )}
 
-          {histLoading && <div style={{ color: "#64748b", padding: 24, textAlign: "center" }}>Loading…</div>}
-
-          {!histLoading && history.length === 0 && (
-            <div style={{ ...styles.card, textAlign: "center", padding: 48 }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
-              <div style={{ color: "#64748b" }}>No analyses yet. Start by analyzing a resume.</div>
+        {/* ── History Tab ── */}
+        {tab === "history" && (
+          <div>
+            <div className="mb-8">
+              <h1 className="text-3xl">History</h1>
+              <p className="text-secondary mt-2">Your recent analysis results.</p>
             </div>
-          )}
 
-          {history.map((r) => (
-            <div key={r._id} style={{ ...styles.card, display: "flex", gap: 20, alignItems: "center" }}>
-              <ScoreGauge score={r.score} size={80} />
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", gap: 12, marginBottom: 8, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: 12, color: "#64748b" }}>Tech: <strong style={{ color: "#3b82f6" }}>{r.tech_score}%</strong></span>
-                  <span style={{ fontSize: 12, color: "#64748b" }}>Soft: <strong style={{ color: "#a78bfa" }}>{r.soft_score}%</strong></span>
-                  <span style={{ fontSize: 12, color: "#64748b" }}>Exp: <strong style={{ color: "#f59e0b" }}>{r.experience_years}+ yrs</strong></span>
-                </div>
-                <div style={{ fontSize: 13, marginBottom: 6 }}>
-                  {(r.matched_skills || []).slice(0, 5).map(s => <Chip key={s} label={s} type="match" />)}
-                  {(r.missing_skills || []).slice(0, 3).map(s => <Chip key={s} label={s} type="missing" />)}
-                </div>
-                <div style={{ fontSize: 11, color: "#475569" }}>{r.created_at ? new Date(r.created_at).toLocaleString() : ""}</div>
+            {histLoading && <div className="text-secondary text-center py-8">Loading...</div>}
+
+            {!histLoading && history.length === 0 && (
+              <div className="card text-center py-16">
+                <div className="text-secondary mb-2">No history available</div>
+                <div className="text-sm text-tertiary">Run an analysis to see your past results here.</div>
               </div>
+            )}
+
+            <div className="flex flex-col gap-4">
+              {history.map((r) => (
+                <div key={r._id} className="card flex items-center gap-6">
+                  <ScoreGauge score={r.score} size={70} />
+                  <div className="flex-col" style={{ flex: 1 }}>
+                    <div className="flex gap-4 mb-2">
+                      <span className="text-sm text-secondary">Tech: <span className="font-semibold text-primary">{r.tech_score}%</span></span>
+                      <span className="text-sm text-secondary">Soft: <span className="font-semibold text-primary">{r.soft_score}%</span></span>
+                      <span className="text-sm text-secondary">Exp: <span className="font-semibold text-primary">{r.experience_years}+</span></span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {(r.matched_skills || []).slice(0, 4).map(s => <Chip key={s} label={s} type="match" />)}
+                      {(r.missing_skills || []).slice(0, 2).map(s => <Chip key={s} label={s} type="missing" />)}
+                    </div>
+                    <div className="text-xs text-tertiary">{r.created_at ? new Date(r.created_at).toLocaleString() : ""}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
