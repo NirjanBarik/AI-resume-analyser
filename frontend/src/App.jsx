@@ -41,6 +41,12 @@ function ScoreGauge({ score, size = 120 }) {
   // High contrast colors
   const color = score >= 75 ? "var(--success)" : score >= 50 ? "var(--warning)" : "var(--danger)";
   
+  // Dynamic sizing based on provided size prop
+  const isSmall = size < 100;
+  const textSizeClass = isSmall ? "text-lg" : "text-3xl";
+  const labelSize = isSmall ? "8px" : "10px";
+  const marginTop = isSmall ? "-4px" : "-10px";
+  
   return (
     <div style={{ position: 'relative', width: size, height: size, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <svg width={size} height={size} viewBox="0 0 120 120" style={{ position: 'absolute', top: 0, left: 0 }}>
@@ -52,9 +58,9 @@ function ScoreGauge({ score, size = 120 }) {
           strokeDashoffset={circ * 0.125} transform="rotate(-225 60 60)"
           style={{ transition: "stroke-dasharray 1s cubic-bezier(0.16, 1, 0.3, 1)" }} />
       </svg>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '-10px' }}>
-        <span className="text-3xl font-bold" style={{ color }}>{score}%</span>
-        <span className="uppercase-label" style={{ fontSize: '10px' }}>Match</span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop }}>
+        <span className={`${textSizeClass} font-bold`} style={{ color }}>{score}%</span>
+        <span className="uppercase-label" style={{ fontSize: labelSize }}>Match</span>
       </div>
     </div>
   );
@@ -73,13 +79,13 @@ function Chip({ label, type }) {
 function MiniBar({ label, value, max }) {
   const pct = max ? (value / max) * 100 : 0;
   return (
-    <div className="mb-2">
+    <div className="mb-3">
       <div className="flex justify-between mb-1">
         <span className="text-sm text-secondary">{label}</span>
         <span className="text-sm font-semibold">{value}</span>
       </div>
-      <div style={{ height: '4px', background: "var(--border-color)", borderRadius: '2px', overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${pct}%`, background: "var(--text-primary)", borderRadius: '2px', transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1)" }} />
+      <div className="progress-bg">
+        <div className="progress-bar" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
