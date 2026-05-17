@@ -237,70 +237,58 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
         </div>
       </section>
 
-      {/* Blog/Articles Placeholder */}
-      <section className="section">
-        <div className="container">
-          <div className="text-center mb-10">
-            <h2 className="section-title">Our Latest Articles</h2>
-            <p className="text-secondary">Career advice, resume tips, and interview strategies.</p>
-          </div>
-          <div className="grid grid-3">
-            {[
-              { title: "How to tailor your resume for ATS", img: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=400&q=80" },
-              { title: "The top 10 skills employers want in 2026", img: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=400&q=80" },
-              { title: "Common resume mistakes to avoid", img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=400&q=80" }
-            ].map((article, i) => (
-              <div key={i} className="card p-0 overflow-hidden" style={{ padding: 0 }}>
-                <img src={article.img} alt={article.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
-                <div style={{ padding: '1.5rem' }}>
-                  <h3 className="font-semibold text-lg mb-2">{article.title}</h3>
-                  <a href="#" className="text-accent text-sm font-semibold hover:underline">Read article →</a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="footer">
         <div className="container">
           <div className="grid grid-4 gap-8">
             <div style={{ gridColumn: 'span 1' }}>
               <div className="footer-brand flex items-center gap-2">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
                 ResumeAI
               </div>
-              <p className="footer-tagline">AI-powered resume analysis for modern professionals.</p>
+              <p className="footer-tagline">AI-powered resume analysis and applicant tracking system (ATS) optimization for modern professionals.</p>
+              <div className="flex gap-3 mt-4">
+                <a href="https://github.com/NirjanBarik" target="_blank" rel="noopener noreferrer" className="footer-link" title="GitHub">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                </a>
+                <a href="https://linkedin.com/in/nirjan-barik" target="_blank" rel="noopener noreferrer" className="footer-link" title="LinkedIn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                </a>
+                <a href="mailto:nirjanbarik@gmail.com" className="footer-link" title="Email">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </a>
+              </div>
             </div>
             
             <div>
-              <div className="footer-col-title">Product</div>
+              <div className="footer-col-title">Capabilities</div>
               <a href="#" className="footer-link">Resume Check</a>
-              <a href="#" className="footer-link">Cover Letter Builder</a>
-              <a href="#" className="footer-link">Pricing</a>
+              <a href="#" className="footer-link">ATS Optimiser</a>
+              <a href="#" className="footer-link">Skill Gap Analysis</a>
+              <a href="#" className="footer-link">History Tracking</a>
             </div>
             
             <div>
-              <div className="footer-col-title">Resources</div>
-              <a href="#" className="footer-link">Blog</a>
-              <a href="#" className="footer-link">Career Guides</a>
-              <a href="#" className="footer-link">Resume Templates</a>
+              <div className="footer-col-title">Developer</div>
+              <a href="https://github.com/NirjanBarik" target="_blank" rel="noopener noreferrer" className="footer-link">About Nirjan</a>
+              <a href="https://github.com/NirjanBarik/AI-resume-analyser" target="_blank" rel="noopener noreferrer" className="footer-link">Source Code</a>
+              <a href="https://github.com/NirjanBarik" target="_blank" rel="noopener noreferrer" className="footer-link">Other Projects</a>
             </div>
             
             <div>
-              <div className="footer-col-title">Company</div>
-              <a href="#" className="footer-link">About Us</a>
-              <a href="#" className="footer-link">Contact</a>
+              <div className="footer-col-title">System</div>
+              <a href="#" className="footer-link">FastAPI Backend</a>
+              <a href="#" className="footer-link">React Frontend</a>
+              <a href="#" className="footer-link">MongoDB Database</a>
               <a href="#" className="footer-link">Privacy Policy</a>
             </div>
           </div>
           
           <div className="footer-bottom">
-            <div>© 2026 ResumeAI. All rights reserved.</div>
+            <div>© 2026 ResumeAI. Developed with ❤️ by <strong>Nirjan Barik</strong>. All rights reserved.</div>
             <div className="flex gap-4">
-              <a href="#" className="footer-link">Terms</a>
-              <a href="#" className="footer-link">Privacy</a>
+              <a href="#" className="footer-link">Terms of Service</a>
+              <a href="#" className="footer-link">Privacy Policy</a>
             </div>
           </div>
         </div>

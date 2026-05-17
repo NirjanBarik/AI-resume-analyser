@@ -328,7 +328,7 @@ export default function App() {
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
                 <div className="mb-6" style={{ textAlign: "center" }}>
-                   <div style={{ margin: '0 auto 1rem', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--r)', background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white', boxShadow: '0 4px 14px rgba(79, 70, 229, 0.35)' }}>
+                   <div style={{ margin: '0 auto 1rem', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--r)', background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white', boxShadow: '0 4px 14px rgba(13, 148, 136, 0.3)' }}>
                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                    </div>
                    <h2 className="text-xl font-bold">{isReg ? "Create an account" : "Welcome back"}</h2>
