@@ -1,7 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function LandingPage({ setView, theme, toggleTheme }) {
   const [openFaq, setOpenFaq] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -17,7 +26,7 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
   return (
     <div className="app-wrap">
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
         <div className="container">
           <div className="nav-logo">
             <div className="nav-logo-icon">
@@ -27,7 +36,9 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
           </div>
           
           <div className="nav-tabs hide-mobile">
-            
+            <a href="#how-it-works" className="nav-tab">How It Works</a>
+            <a href="#features" className="nav-tab">Features</a>
+            <a href="#faq" className="nav-tab">FAQ</a>
           </div>
 
           <div className="nav-actions">
@@ -125,7 +136,7 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
       </section>
 
       {/* How it works */}
-      <section className="section section-alt">
+      <section id="how-it-works" className="section section-alt">
         <div className="container">
           <div className="text-center mb-12">
             <div className="section-badge">How it works</div>
@@ -165,7 +176,7 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
       </section>
 
       {/* Features */}
-      <section className="section">
+      <section id="features" className="section">
         <div className="container">
           <div className="grid grid-2 items-center gap-12">
             <div>
@@ -215,7 +226,7 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
       </section>
 
       {/* FAQ */}
-      <section className="section section-alt">
+      <section id="faq" className="section section-alt">
         <div className="container" style={{ maxWidth: '800px' }}>
           <div className="text-center mb-10">
             <h2 className="section-title">Frequently Asked Questions</h2>
@@ -251,10 +262,10 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
                 <a href="https://github.com/NirjanBarik" target="_blank" rel="noopener noreferrer" className="footer-link" title="GitHub">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
                 </a>
-                <a href="https://linkedin.com/in/nirjan-barik" target="_blank" rel="noopener noreferrer" className="footer-link" title="LinkedIn">
+                <a href="https://www.linkedin.com/in/nirjanbarik04" target="_blank" rel="noopener noreferrer" className="footer-link" title="LinkedIn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
                 </a>
-                <a href="mailto:nirjanbarik@gmail.com" className="footer-link" title="Email">
+                <a href="mailto:nirjanbarik1@gmail.com" className="footer-link" title="Email">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                 </a>
               </div>
@@ -285,7 +296,7 @@ export default function LandingPage({ setView, theme, toggleTheme }) {
           </div>
           
           <div className="footer-bottom">
-            <div>© 2026 ResumeAI. Developed with ❤️ by <strong>Nirjan Barik</strong>. All rights reserved.</div>
+            <div>© 2026 ResumeAI. Developed by <strong>Nirjan Barik</strong>. All rights reserved.</div>
             <div className="flex gap-4">
               <a href="#" className="footer-link">Terms of Service</a>
               <a href="#" className="footer-link">Privacy Policy</a>

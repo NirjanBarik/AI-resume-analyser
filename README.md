@@ -13,6 +13,24 @@
 
 ---
 
+## 🎨 Visual Showcase
+
+The AI Resume Analyzer has been completely redesigned with a gorgeous, modern Teal & Cyan color palette that looks incredibly premium in both dark and light modes. Here is a demonstration of the sleek user experience:
+
+### 🌌 Dark Mode - Transparent Dynamic Hero
+![Hero Dark Mode](assets/hero_dark_mode.png)
+
+### ☀️ Light Mode - High-Contrast Pastels
+![Hero Light Mode](assets/hero_light_mode.png)
+
+### 📈 Intelligent ATS & Gap Analysis
+![Features Section](assets/features_section.png)
+
+### ⚙️ How It Works Dashboard
+![How It Works Section](assets/how_it_works.png)
+
+---
+
 ## 🌟 Overview
 
 The **AI Resume Analyzer** is designed to bridge the gap between job seekers and Applicant Tracking Systems (ATS). By leveraging semantic text extraction and intelligent NLP parser models, it evaluates resumes against any target job description. The system instantly generates an overall match score, identifies technical/soft skill gaps, highlights strengths, and maintains a historical analysis dashboard.
