@@ -152,9 +152,9 @@ This workspace is fully optimized for containerless cloud deployment.
 
 ## 👨‍💻 Author
 
-Developed with ❤️ by **Nirjan Barik**
+Developed  by **Nirjan Barik**
 - **GitHub**: [@NirjanBarik](https://github.com/NirjanBarik)
-- **LinkedIn**: [Nirjan Barik](https://linkedin.com/in/nirjan-barik)
+- **LinkedIn**: [Nirjan Barik](https://linkedin.com/in/nirjanbarik04/)
 
 ---
 

@@ -16,6 +16,34 @@ class TextAnalyzeRequest(BaseModel):
 TECH_SKILLS = ["python", "java", "react", "node", "sql", "mongodb", "aws", "docker", "machine learning", "kubernetes", "javascript", "typescript", "c++", "c#", "fastapi", "express", "django", "spring", "flask"]
 SOFT_SKILLS = ["communication", "leadership", "teamwork", "problem solving", "time management", "critical thinking", "adaptability", "management", "collaboration"]
 
+COURSE_RECOMMENDATIONS = {
+    "python": "https://www.coursera.org/specializations/python",
+    "react": "https://react.dev/learn",
+    "node": "https://nodejs.dev/learn",
+    "aws": "https://aws.amazon.com/training/",
+    "docker": "https://docs.docker.com/get-started/",
+    "sql": "https://www.w3schools.com/sql/",
+    "mongodb": "https://learn.mongodb.com/",
+    "java": "https://dev.java/learn/",
+    "javascript": "https://javascript.info/",
+    "typescript": "https://www.typescriptlang.org/docs/",
+    "machine learning": "https://www.coursera.org/learn/machine-learning",
+    "fastapi": "https://fastapi.tiangolo.com/",
+}
+
+STOP_WORDS = set(["the", "and", "to", "a", "of", "in", "for", "is", "on", "that", "by", "this", "with", "i", "you", "it", "not", "or", "be", "are", "from", "at", "as", "your", "all", "have", "new", "more", "an", "was", "we", "will", "home", "can", "us", "about", "if", "page", "my", "has", "search", "free", "but", "our", "one", "other", "do", "no", "information", "time", "they", "site", "he", "up", "may", "what", "which", "their", "news", "out", "use", "any", "there", "see", "only", "so", "his", "when", "contact", "here", "business", "who", "web", "also", "now", "help", "get", "pm", "view", "online", "c", "e", "first", "am", "been", "would", "how", "were", "me", "s", "services", "some", "these", "click", "its", "like", "service", "x", "than", "find", "price", "date", "back", "top", "people", "had", "list", "name", "just", "over", "state", "year", "day", "into", "email", "two", "health", "n", "world", "re", "next", "used", "go", "b", "work", "last", "most", "products", "music", "buy", "data", "make", "them", "should", "product", "system", "post", "her", "city", "t", "add", "policy", "number", "such", "please", "available", "copyright", "support", "message", "after", "best", "software", "then", "jan", "good", "video", "well", "d", "where", "info", "rights", "public", "books", "high", "school", "through", "m", "each", "links", "she", "review", "years", "order", "very", "privacy", "book", "items", "company", "read", "group", "sex", "need", "many", "user", "said", "de", "does", "set", "under", "general", "research", "university", "january", "mail", "full", "map", "reviews", "program", "life"])
+
+def get_word_frequencies(text: str):
+    words = re.findall(r'\b[a-z]{3,}\b', text.lower())
+    freq = {}
+    for w in words:
+        if w not in STOP_WORDS:
+            freq[w] = freq.get(w, 0) + 1
+    # Return top 50 words to avoid massive payloads
+    sorted_words = sorted(freq.items(), key=lambda x: x[1], reverse=True)[:50]
+    return [{"text": w, "value": count} for w, count in sorted_words]
+
+
 def analyze_resume_logic(resume_text: str, jd_text: str, user_id: str):
     resume_lower = resume_text.lower()
     jd_lower = jd_text.lower()
@@ -57,15 +85,38 @@ def analyze_resume_logic(resume_text: str, jd_text: str, user_id: str):
     email_match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', resume_text)
     email = email_match.group(0) if email_match else None
     
+    # ATS Formatting Heuristics
+    ats_sections = ["experience", "education", "skills", "projects"]
+    found_sections = [sec for sec in ats_sections if sec in resume_lower]
+    has_contact = email is not None
+    ats_score = int((len(found_sections) + (1 if has_contact else 0)) / (len(ats_sections) + 1) * 100)
+    
+    # Word Frequencies for Word Cloud
+    resume_words = get_word_frequencies(resume_text)
+    jd_words = get_word_frequencies(jd_text)
+    
+    # Upskilling Recommendations
+    recommended_courses = []
+    for ms in missing_skills:
+        if ms in COURSE_RECOMMENDATIONS:
+            recommended_courses.append({
+                "skill": ms,
+                "course_url": COURSE_RECOMMENDATIONS[ms]
+            })
+
     result = {
         "user_id": user_id,
         "score": score,
         "tech_score": tech_score,
         "soft_score": soft_score,
+        "ats_score": ats_score,
         "experience_years": exp_years,
         "matched_skills": matched_skills,
         "missing_skills": missing_skills,
         "extra_skills": extra_skills,
+        "recommended_courses": recommended_courses,
+        "resume_word_cloud": resume_words,
+        "jd_word_cloud": jd_words,
         "contact": {"email": email},
         "created_at": datetime.utcnow()
     }
